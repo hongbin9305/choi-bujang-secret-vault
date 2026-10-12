@@ -20,7 +20,6 @@ export default async function handler(req, res) {
       {
         headers: {
           apikey: key,
-          Authorization: `Bearer ${key}`
         }
       }
     );
