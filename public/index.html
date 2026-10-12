@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ko">
 <head>
@@ -16,24 +17,69 @@
     li { border: 1px solid #51667c; border-radius: 14px; padding: 17px 19px; background: #1a2a3d; }
     strong { display: block; font-size: 18px; margin-bottom: 5px; }
     li span { color: #bfd0e5; }
+    .panel { padding: 22px; border: 1px solid #51667c; border-radius: 14px; background: #1a2a3d; }
+    input { display: block; box-sizing: border-box; width: 100%; margin: 12px 0; padding: 13px; border: 1px solid #51667c; border-radius: 8px; background: #101a28; color: white; font-size: 16px; }
+    button { padding: 12px 20px; border: 0; border-radius: 8px; background: #8ad8df; color: #101a28; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .hidden { display: none; }
+    #message { margin-top: 15px; }
   </style>
 </head>
 <body>
   <main>
-    <div class="eyebrow">BYTE BACK · 1단계 피해 확인</div>
+    <div class="eyebrow">BYTE BACK · 2단계 접근 통제</div>
     <h1>점령된 자료실</h1>
-    <p>지금은 보호 장치가 없는 상태입니다. 아래 기록은 모두 실습을 위해 만든 가상 자료입니다.</p>
-    <div class="notice">로그인하지 않은 방문자도 자료를 볼 수 있습니다. 공개 범위를 확인하고, 다음 제작 단계에서 접근을 차례로 막아 주세요.</div>
-    <ul id="notes" aria-live="polite"><li>가상 자료를 불러오는 중입니다.</li></ul>
+    <p>보호 장치를 복구하는 중입니다. 아래 기록은 모두 실습을 위해 만든 가상 자료입니다.</p>
+
+    <div class="notice">
+      인증된 사용자만 자신의 자료에 접근할 수 있습니다.
+    </div>
+
+    <section id="loginPanel" class="panel hidden">
+      <h2>보안 로그인</h2>
+      <form id="loginForm">
+        <input id="email" type="email" placeholder="이메일" autocomplete="username" required>
+        <input id="password" type="password" placeholder="비밀번호" autocomplete="current-password" required>
+        <button id="loginButton" type="submit">로그인</button>
+      </form>
+    </section>
+
+    <section id="vaultPanel" class="hidden">
+      <p id="userInfo"></p>
+      <button id="logoutButton" type="button">로그아웃</button>
+      <h2>보호된 자료</h2>
+      <ul id="notes" aria-live="polite"></ul>
+    </section>
+
+    <p id="message" role="status" aria-live="polite">인증 상태 확인 중...</p>
   </main>
+
   <script type="module">
-    const list = document.querySelector('#notes');
-    try {
-      const response = await fetch('/api/note', { cache: 'no-store' });
-      if (!response.ok) throw new Error('공개 자료를 읽을 수 없습니다.');
-      const data = await response.json();
-      if (!Array.isArray(data.notes)) throw new Error('자료 형식이 맞지 않습니다.');
-      list.replaceChildren(...data.notes.map(note => {
+    import { createClient } from
+      'https://esm.sh/@supabase/supabase-js@2';
+
+    const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'YOUR_PUBLISHABLE_KEY';
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const loginPanel = document.querySelector('#loginPanel');
+    const vaultPanel = document.querySelector('#vaultPanel');
+    const message = document.querySelector('#message');
+    const notesList = document.querySelector('#notes');
+
+    function showLogin(text = '') {
+      loginPanel.classList.remove('hidden');
+      vaultPanel.classList.add('hidden');
+      notesList.replaceChildren();
+      message.textContent = text;
+    }
+
+    function renderNotes(notes) {
+      notesList.replaceChildren(...notes.map(note => {
         const item = document.createElement('li');
         const title = document.createElement('strong');
         const content = document.createElement('span');
@@ -42,11 +88,95 @@
         item.append(title, content);
         return item;
       }));
-    } catch (error) {
-      const item = document.createElement('li');
-      item.textContent = error.message;
-      list.replaceChildren(item);
     }
+
+    async function loadVault() {
+      const { data: { session }, error } =
+        await supabase.auth.getSession();
+
+      if (error || !session) {
+        showLogin('로그인이 필요합니다.');
+        return;
+      }
+
+      loginPanel.classList.add('hidden');
+      vaultPanel.classList.remove('hidden');
+      document.querySelector('#userInfo').textContent =
+        `로그인 계정: ${session.user.email}`;
+
+      message.textContent = '자료를 불러오는 중입니다.';
+      notesList.replaceChildren();
+
+      try {
+        const response = await fetch('/api/note', {
+          cache: 'no-store',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+
+        if (response.status === 401) {
+          showLogin('인증이 만료되었습니다. 다시 로그인해 주세요.');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('보호된 자료를 불러올 수 없습니다.');
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.notes)) {
+          throw new Error('자료 형식이 올바르지 않습니다.');
+        }
+
+        renderNotes(data.notes);
+        message.textContent = `${data.notes.length}개의 자료를 불러왔습니다.`;
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    }
+
+    document.querySelector('#loginForm')
+      .addEventListener('submit', async event => {
+        event.preventDefault();
+
+        const button = document.querySelector('#loginButton');
+        button.disabled = true;
+        message.textContent = '로그인 중입니다.';
+
+        try {
+          const email = document.querySelector('#email').value;
+          const password = document.querySelector('#password').value;
+
+          const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) {
+            message.textContent = '로그인에 실패했습니다. 계정 정보를 확인해 주세요.';
+            return;
+          }
+
+          document.querySelector('#password').value = '';
+          await loadVault();
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+    document.querySelector('#logoutButton')
+      .addEventListener('click', async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          message.textContent = '로그아웃에 실패했습니다.';
+          return;
+        }
+        showLogin('로그아웃되었습니다.');
+      });
+
+    await loadVault();
   </script>
 </body>
 </html>
