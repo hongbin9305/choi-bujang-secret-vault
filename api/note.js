@@ -25,8 +25,11 @@ export default async function handler(req, res) {
     );
 
     if (!response.ok) {
-      throw new Error(`Database request failed: ${response.status}`);
-    }
+  const details = await response.text();
+  console.error('Supabase error status:', response.status);
+  console.error('Supabase error details:', details);
+  throw new Error(`Database request failed: ${response.status}`);
+}
 
     const notes = await response.json();
     return res.status(200).json({ notes });
