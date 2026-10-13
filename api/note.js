@@ -18,8 +18,19 @@ export default async function handler(req, res) {
   const match = /^Bearer (.+)$/i.exec(authorization);
 
   if (!match) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
+  console.warn(JSON.stringify({
+    event: 'unauthorized_access',
+    path: '/api/note',
+    reason: 'missing_authentication',
+    status: 401,
+    timestamp: new Date().toISOString()
+  }));
+
+  return res.status(401).json({
+    error: 'Authentication required'
+  });
+}
+
 
   const token = match[1];
 
