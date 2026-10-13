@@ -1,4 +1,29 @@
 
+
+async function recordSecurityEvent(url, key, reason) {
+  try {
+    const response = await fetch(`${url}/rest/v1/security_events`, {
+      method: 'POST',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify({
+        event_type: 'unauthorized_access',
+        path: '/api/note',
+        reason
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Security event save failed:', response.status);
+    }
+  } catch (error) {
+    console.error('Security event logging error:', error.message);
+  }
+}
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -16,8 +41,8 @@ export default async function handler(req, res) {
 
   const authorization = req.headers.authorization || '';
   const match = /^Bearer (.+)$/i.exec(authorization);
-
-  if (!match) {
+  
+if (!match) {
   console.warn(JSON.stringify({
     event: 'unauthorized_access',
     path: '/api/note',
@@ -26,11 +51,12 @@ export default async function handler(req, res) {
     timestamp: new Date().toISOString()
   }));
 
+  await recordSecurityEvent(url, key, 'missing_authentication');
+
   return res.status(401).json({
     error: 'Authentication required'
   });
 }
-
 
   const token = match[1];
 
