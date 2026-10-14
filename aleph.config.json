@@ -13,6 +13,6 @@
     "/api/note",
     "/api/note/:id"
   ],
-  "originalApiUrl": null,
+  "originalApiUrl": "https://krgebzcfvgflrkjisaxd.supabase.co/rest/v1/defense_notes",
   "restoreRoute": null
 }
