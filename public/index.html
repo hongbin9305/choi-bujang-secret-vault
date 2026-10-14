@@ -285,20 +285,7 @@
   </main>
 
   <script type="module">
-    import { createClient } from
-      'https://esm.sh/@supabase/supabase-js@2';
-
-    const SUPABASE_URL =
-      'https://krgebzcfvgflrkjisaxd.supabase.co';
-
-    const SUPABASE_PUBLISHABLE_KEY =
-      'sb_publishable_XeyQYYYXSWxKBmtKqShq0g_drUUGO57';
-
-    const supabase = createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-
+   
     const loginPanel =
       document.querySelector('#loginPanel');
 
@@ -354,16 +341,15 @@
       message.textContent = text;
     }
 
-    async function getSession() {
-      const { data: { session }, error } =
-        await supabase.auth.getSession();
+  async function getSession() {
+  const access_token = sessionStorage.getItem('access_token');
 
-      if (error || !session) {
-        throw new Error('로그인이 필요합니다.');
-      }
+  if (!access_token) {
+    throw new Error('로그인이 필요합니다.');
+  }
 
-      return session;
-    }
+  return { access_token };
+}
 
     async function noteRequest(method, body) {
       const session = await getSession();
@@ -574,9 +560,14 @@
     }
 
     async function loadVault() {
-      const { data: { session }, error } =
-        await supabase.auth.getSession();
+      const access_token = sessionStorage.getItem('access_token');
+const email = sessionStorage.getItem('user_email');
 
+const session = access_token
+  ? { access_token, user: { email } }
+  : null;
+
+const error = null;
       if (error || !session) {
         showLogin('로그인이 필요합니다.');
         return;
@@ -677,12 +668,11 @@
     ).addEventListener(
       'click',
       async () => {
-        const { data: { session } } =
-          await supabase.auth.getSession();
+ const access_token = sessionStorage.getItem('access_token');
 
-        if (session) {
-          await loadSecurityStatus(session);
-        }
+if (access_token) {
+  await loadSecurityStatus({ access_token });
+}
       }
     );
 
@@ -706,13 +696,25 @@
           const password =
             document.querySelector('#password').value;
 
-          const { error } =
-            await supabase.auth.signInWithPassword({
-              email,
-              password
-            });
+         const response = await fetch('/api/auth', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+               },
+          body: JSON.stringify({ email, password })
+             });
 
-          if (error) {
+         const data = await response.json();
+
+               const error = response.ok
+           ? null
+                : new Error(data.error || '로그인 실패'); 
+ if (response.ok) {
+  sessionStorage.setItem('access_token', data.access_token);
+  sessionStorage.setItem('refresh_token', data.refresh_token);
+  sessionStorage.setItem('user_email', data.user.email);
+}
+        if (error) {
             message.textContent =
               '로그인에 실패했습니다. 계정 정보를 확인해 주세요.';
             return;
@@ -737,8 +739,11 @@
     ).addEventListener(
       'click',
       async () => {
-        const { error } =
-          await supabase.auth.signOut();
+  sessionStorage.removeItem('access_token');
+sessionStorage.removeItem('refresh_token');
+sessionStorage.removeItem('user_email');
+
+const error = null;
 
         if (error) {
           message.textContent =
