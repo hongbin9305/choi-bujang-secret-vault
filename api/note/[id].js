@@ -1,5 +1,26 @@
+import { readFileSync } from 'node:fs';
+import { createLoginVerifier } from '../../src/verify-login.mjs';
 
 const ALLOWED_METHODS = ['GET', 'PUT', 'DELETE'];
+
+const config = JSON.parse(
+  readFileSync(
+    new URL('../../aleph.config.json', import.meta.url),
+    'utf8'
+  )
+);
+
+let verifier;
+
+function getVerifier(secretKey) {
+  if (!verifier) {
+    verifier = createLoginVerifier({
+      config,
+      supabaseSecretKey: secretKey
+    });
+  }
+  return verifier;
+}
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -20,48 +41,28 @@ export default async function handler(req, res) {
     });
   }
 
-  const match = /^Bearer (.+)$/i.exec(
-    req.headers.authorization || ''
-  );
-
-  if (!match) {
+  if (!req.headers.authorization) {
     return res.status(401).json({
       error: 'Authentication required'
     });
   }
 
-  const token = match[1];
-
   try {
-    // Supabase 서버에서 실제 로그인 토큰 확인
-    const authResponse = await fetch(
-      `${url}/auth/v1/user`,
-      {
-        headers: {
-          apikey: key,
-          Authorization: `Bearer ${token}`
-        }
-      }
+    // 서버에서 로그인 토큰 검증
+    const identity = await getVerifier(key)(
+      req.headers.authorization
     );
 
-    if (!authResponse.ok) {
+    if (!identity) {
       return res.status(401).json({
         error: 'Invalid authentication'
       });
     }
 
-    const user = await authResponse.json();
+    // 요청자가 입력한 사용자 ID는 사용하지 않는다.
+    const userId = identity.userId;
 
-    if (!user.id) {
-      return res.status(401).json({
-        error: 'Invalid user'
-      });
-    }
-
-    // URL의 메모 번호 확인
-    const rawId = req.query.id;
-
-    const id = Number(rawId);
+    const id = Number(req.query.id);
 
     if (
       !Number.isSafeInteger(id) ||
@@ -72,28 +73,31 @@ export default async function handler(req, res) {
       });
     }
 
+    // 서버 전용 키 사용
+    // 검증된 소유자의 메모만 접근 가능
     const headers = {
       apikey: key,
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json'
     };
 
     const params = new URLSearchParams({
       id: `eq.${id}`,
-      owner_id: `eq.${user.id}`,
+      owner_id: `eq.${userId}`,
       select: 'id,title,content'
     });
 
     const endpoint =
       `${url}/rest/v1/defense_notes?${params}`;
 
-    // 개별 메모 조회
     if (req.method === 'GET') {
       const response = await fetch(endpoint, {
-        headers
+        headers,
+        cache: 'no-store'
       });
 
       if (!response.ok) {
+        console.error('GET note failed:', response.status);
         return res.status(500).json({
           error: 'Failed to load note'
         });
@@ -114,14 +118,21 @@ export default async function handler(req, res) {
       });
     }
 
-    // 개별 메모 수정
     if (req.method === 'PUT') {
-      const body = typeof req.body === 'string'
-        ? JSON.parse(req.body)
-        : req.body || {};
+      let body;
+
+      try {
+        body = typeof req.body === 'string'
+          ? JSON.parse(req.body)
+          : req.body || {};
+      } catch {
+        return res.status(400).json({
+          error: 'Invalid JSON'
+        });
+      }
 
       const title = body.title;
-      const content = body.body;
+      const content = body.body ?? body.content;
 
       if (
         typeof title !== 'string' ||
@@ -148,6 +159,7 @@ export default async function handler(req, res) {
       });
 
       if (!response.ok) {
+        console.error('PUT note failed:', response.status);
         return res.status(500).json({
           error: 'Failed to update note'
         });
@@ -168,7 +180,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // 개별 메모 삭제
     const response = await fetch(endpoint, {
       method: 'DELETE',
       headers: {
@@ -178,6 +189,7 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
+      console.error('DELETE note failed:', response.status);
       return res.status(500).json({
         error: 'Failed to delete note'
       });
@@ -197,7 +209,10 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Individual note API error:', error.message);
+    console.error(
+      'Individual note API error:',
+      error.message
+    );
 
     return res.status(500).json({
       error: 'Request failed'
