@@ -1,0 +1,5 @@
+
+{
+  "explanation": "3단계에서 Supabase Auth 로그인과 로그아웃을 구현했습니다. 로그인한 사용자의 메모 조회, 추가, 수정, 삭제를 구현했습니다. 비로그인 API 접근 시 HTTP 401과 JSON 오류 메시지를 반환하도록 했습니다.",
+  "blockedAt": "/api/note"
+}
