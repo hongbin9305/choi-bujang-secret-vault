@@ -6,141 +6,570 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BYTE BACK | 점령된 자료실</title>
   <style>
-    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
-    body { margin: 0; min-height: 100vh; background: #101a28; color: #ecf4ff; }
-    main { max-width: 760px; margin: 0 auto; padding: 44px 22px 64px; }
-    .eyebrow { color: #8ad8df; font-size: 14px; font-weight: 700; letter-spacing: .08em; }
-    h1 { margin: 16px 0; font-size: clamp(30px, 7vw, 48px); line-height: 1.2; }
-    p { font-size: 17px; line-height: 1.7; color: #bfd0e5; }
-    .notice { margin: 26px 0; padding: 18px; border: 1px solid #d07384; border-radius: 14px; color: #ffe3e8; background: #612a3544; }
-    ul { list-style: none; display: grid; gap: 12px; padding: 0; }
-    li { border: 1px solid #51667c; border-radius: 14px; padding: 17px 19px; background: #1a2a3d; }
-    strong { display: block; font-size: 18px; margin-bottom: 5px; }
-    li span { color: #bfd0e5; }
-    .panel { padding: 22px; border: 1px solid #51667c; border-radius: 14px; background: #1a2a3d; }
-    input { display: block; box-sizing: border-box; width: 100%; margin: 12px 0; padding: 13px; border: 1px solid #51667c; border-radius: 8px; background: #101a28; color: white; font-size: 16px; }
-    button { padding: 12px 20px; border: 0; border-radius: 8px; background: #8ad8df; color: #101a28; font-weight: 700; cursor: pointer; }
-    button:disabled { opacity: .6; cursor: wait; }
-    .hidden { display: none; }
-    #message { margin-top: 15px; }
+    :root {
+      color-scheme: dark;
+      font-family: system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #101a28;
+      color: #ecf4ff;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 44px 22px 64px;
+    }
+
+    .eyebrow {
+      color: #8ad8df;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    h1 {
+      margin: 16px 0;
+      font-size: clamp(30px, 7vw, 48px);
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #bfd0e5;
+    }
+
+    .notice {
+      margin: 26px 0;
+      padding: 18px;
+      border: 1px solid #d07384;
+      border-radius: 14px;
+      color: #ffe3e8;
+      background: #612a3544;
+    }
+
+    .panel {
+      padding: 22px;
+      border: 1px solid #51667c;
+      border-radius: 14px;
+      background: #1a2a3d;
+      margin-top: 22px;
+    }
+
+    input, textarea {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      margin: 12px 0;
+      padding: 13px;
+      border: 1px solid #51667c;
+      border-radius: 8px;
+      background: #101a28;
+      color: white;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 8px;
+      background: #8ad8df;
+      color: #101a28;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 4px 6px 4px 0;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .secondary {
+      background: #52677e;
+      color: white;
+    }
+
+    .danger {
+      background: #e38b96;
+      color: #101a28;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    ul {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      padding: 0;
+    }
+
+    li {
+      border: 1px solid #51667c;
+      border-radius: 14px;
+      padding: 17px 19px;
+      background: #1a2a3d;
+    }
+
+    li strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .note-content {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #bfd0e5;
+      margin-bottom: 12px;
+    }
+
+    .actions {
+      margin-top: 12px;
+    }
+
+    #message, #noteMessage {
+      margin-top: 15px;
+    }
   </style>
 </head>
+
 <body>
   <main>
-    <div class="eyebrow">BYTE BACK · 2단계 접근 통제</div>
-    <h1>점령된 자료실</h1>
-    <p>보호 장치를 복구하는 중입니다. 아래 기록은 모두 실습을 위해 만든 가상 자료입니다.</p>
-
-    <div class="notice">
-      인증된 사용자만 자신의 자료에 접근할 수 있습니다.
+    <div class="eyebrow">
+      BYTE BACK · 3단계 메모 관리
     </div>
 
+    <h1>점령된 자료실</h1>
+
+    <p>
+      사용자 인증과 접근 통제를 적용한
+      보안 자료실입니다.
+      모든 자료는 실습용 가상 데이터입니다.
+    </p>
+
+    <div class="notice">
+      인증된 사용자만 자신의 자료를
+      조회·추가·수정·삭제할 수 있습니다.
+    </div>
+
+    <!-- 로그인 -->
     <section id="loginPanel" class="panel hidden">
       <h2>보안 로그인</h2>
+
       <form id="loginForm">
-        <input id="email" type="email" placeholder="이메일" autocomplete="username" required>
-        <input id="password" type="password" placeholder="비밀번호" autocomplete="current-password" required>
-        <button id="loginButton" type="submit">로그인</button>
+        <input
+          id="email"
+          type="email"
+          placeholder="이메일"
+          autocomplete="username"
+          required
+        >
+
+        <input
+          id="password"
+          type="password"
+          placeholder="비밀번호"
+          autocomplete="current-password"
+          required
+        >
+
+        <button id="loginButton" type="submit">
+          로그인
+        </button>
       </form>
     </section>
 
+    <!-- 자료실 -->
     <section id="vaultPanel" class="hidden">
       <p id="userInfo"></p>
-      <button id="logoutButton" type="button">로그아웃</button>
-      <h2>보호된 자료</h2>
-      <ul id="notes" aria-live="polite"></ul>
+
+      <button id="logoutButton" type="button"
+        class="secondary">
+        로그아웃
+      </button>
+
+      <section class="panel">
+        <h2>메모 작성</h2>
+
+        <form id="noteForm">
+          <input
+            id="noteTitle"
+            placeholder="메모 제목"
+            maxlength="200"
+            required
+          >
+
+          <textarea
+            id="noteContent"
+            placeholder="메모 내용을 입력하세요."
+            maxlength="10000"
+            required
+          ></textarea>
+
+          <button id="saveNoteButton" type="submit">
+            메모 추가
+          </button>
+
+          <button
+            id="cancelEditButton"
+            type="button"
+            class="secondary hidden"
+          >
+            수정 취소
+          </button>
+        </form>
+
+        <p id="noteMessage" role="status"></p>
+      </section>
+
+      <section class="panel">
+        <h2>내 메모</h2>
+
+        <button
+          id="refreshNotes"
+          type="button"
+          class="secondary"
+        >
+          메모 새로고침
+        </button>
+
+        <ul id="notes" aria-live="polite"></ul>
+      </section>
     </section>
 
-    
-<section id="securityPanel" class="panel hidden" style="margin-top:24px">
-  <h2>🛡️ BYTE BACK · 보안 관제</h2>
-  <p>최근 5분간 비인가 접근 현황</p>
+    <!-- 관리자 전용 보안 관제 -->
+    <section
+      id="securityPanel"
+      class="panel hidden"
+    >
+      <h2>🛡️ BYTE BACK · 보안 관제</h2>
 
-  <p>접근 시도: <strong id="attemptCount">-</strong></p>
-  <p>위험 수준: <strong id="threatLevel">-</strong></p>
+      <p>최근 5분간 비인가 접근 현황</p>
 
-  <button id="refreshSecurity" type="button">
-    보안 현황 새로고침
-  </button>
+      <p>
+        접근 시도:
+        <strong id="attemptCount">-</strong>
+      </p>
 
-  <p id="securityMessage" role="status"></p>
-</section>
+      <p>
+        위험 수준:
+        <strong id="threatLevel">-</strong>
+      </p>
 
-    <p id="message" role="status" aria-live="polite">인증 상태 확인 중...</p>
+      <button
+        id="refreshSecurity"
+        type="button"
+      >
+        보안 현황 새로고침
+      </button>
+
+      <p id="securityMessage" role="status"></p>
+    </section>
+
+    <p id="message" role="status"
+      aria-live="polite">
+      인증 상태 확인 중...
+    </p>
   </main>
 
   <script type="module">
     import { createClient } from
       'https://esm.sh/@supabase/supabase-js@2';
 
-    const SUPABASE_URL = 'https://krgebzcfvgflrkjisaxd.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_XeyQYYYXSWxKBmtKqShq0g_drUUGO57';
+    const SUPABASE_URL =
+      'https://krgebzcfvgflrkjisaxd.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_XeyQYYYXSWxKBmtKqShq0g_drUUGO57';
 
     const supabase = createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY
     );
 
-    const loginPanel = document.querySelector('#loginPanel');
-    const vaultPanel = document.querySelector('#vaultPanel');
-    const message = document.querySelector('#message');
-    const notesList = document.querySelector('#notes');
+    const loginPanel =
+      document.querySelector('#loginPanel');
+
+    const vaultPanel =
+      document.querySelector('#vaultPanel');
+
+    const securityPanel =
+      document.querySelector('#securityPanel');
+
+    const message =
+      document.querySelector('#message');
+
+    const noteMessage =
+      document.querySelector('#noteMessage');
+
+    const notesList =
+      document.querySelector('#notes');
+
+    const noteForm =
+      document.querySelector('#noteForm');
+
+    const noteTitle =
+      document.querySelector('#noteTitle');
+
+    const noteContent =
+      document.querySelector('#noteContent');
+
+    const saveNoteButton =
+      document.querySelector('#saveNoteButton');
+
+    const cancelEditButton =
+      document.querySelector('#cancelEditButton');
+
+    let currentNotes = [];
+    let editingId = null;
+
+    function resetEditor() {
+      editingId = null;
+      noteForm.reset();
+      saveNoteButton.textContent = '메모 추가';
+      cancelEditButton.classList.add('hidden');
+    }
 
     function showLogin(text = '') {
       loginPanel.classList.remove('hidden');
       vaultPanel.classList.add('hidden');
+      securityPanel.classList.add('hidden');
+
       notesList.replaceChildren();
+      currentNotes = [];
+      resetEditor();
+
       message.textContent = text;
     }
 
-    function renderNotes(notes) {
-      notesList.replaceChildren(...notes.map(note => {
-        const item = document.createElement('li');
-        const title = document.createElement('strong');
-        const content = document.createElement('span');
-        title.textContent = note.title;
-        content.textContent = note.content;
-        item.append(title, content);
-        return item;
-      }));
+    async function getSession() {
+      const { data: { session }, error } =
+        await supabase.auth.getSession();
+
+      if (error || !session) {
+        throw new Error('로그인이 필요합니다.');
+      }
+
+      return session;
     }
 
-    
-    async function loadSecurityStatus(session) {
-      const panel = document.querySelector('#securityPanel');
-      const securityMessage = document.querySelector('#securityMessage');
+    async function noteRequest(method, body) {
+      const session = await getSession();
 
-      try {
-        const response = await fetch('/api/security-status', {
-          cache: 'no-store',
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
-          }
+      const options = {
+        method,
+        cache: 'no-store',
+        headers: {
+          Authorization:
+            `Bearer ${session.access_token}`
+        }
+      };
+
+      if (body !== undefined) {
+        options.headers['Content-Type'] =
+          'application/json';
+
+        options.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(
+        '/api/note',
+        options
+      );
+
+      const data = await response.json()
+        .catch(() => ({}));
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error(
+            '인증이 만료되었습니다. 다시 로그인해 주세요.'
+          );
+        }
+
+        throw new Error(
+          data.error || `요청 실패 (${response.status})`
+        );
+      }
+
+      return data;
+    }
+
+    function renderNotes(notes) {
+      currentNotes = notes;
+      notesList.replaceChildren();
+
+      if (notes.length === 0) {
+        const item = document.createElement('li');
+        item.textContent =
+          '저장된 메모가 없습니다. 새 메모를 작성해 보세요.';
+        notesList.append(item);
+        return;
+      }
+
+      for (const note of notes) {
+        const item = document.createElement('li');
+
+        const title = document.createElement('strong');
+        title.textContent = note.title;
+
+        const content = document.createElement('div');
+        content.className = 'note-content';
+        content.textContent = note.content;
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const editButton = document.createElement('button');
+        editButton.type = 'button';
+        editButton.className = 'secondary';
+        editButton.textContent = '수정';
+
+        editButton.addEventListener('click', () => {
+          editingId = note.id;
+          noteTitle.value = note.title;
+          noteContent.value = note.content;
+
+          saveNoteButton.textContent = '수정 저장';
+          cancelEditButton.classList.remove('hidden');
+
+          noteMessage.textContent =
+            '메모를 수정한 뒤 수정 저장을 눌러 주세요.';
+
+          noteTitle.focus();
+          noteForm.scrollIntoView({
+            behavior: 'smooth'
+          });
         });
 
-        if (response.status === 403 || response.status === 401) {
-          panel.classList.add('hidden');
+        const deleteButton =
+          document.createElement('button');
+
+        deleteButton.type = 'button';
+        deleteButton.className = 'danger';
+        deleteButton.textContent = '삭제';
+
+        deleteButton.addEventListener(
+          'click',
+          async () => {
+            const confirmed = confirm(
+              `"${note.title}" 메모를 삭제할까요?`
+            );
+
+            if (!confirmed) return;
+
+            deleteButton.disabled = true;
+            noteMessage.textContent = '삭제 중...';
+
+            try {
+              await noteRequest('DELETE', {
+                id: note.id
+              });
+
+              if (editingId === note.id) {
+                resetEditor();
+              }
+
+              await loadNotes();
+              noteMessage.textContent =
+                '메모가 삭제되었습니다.';
+            } catch (error) {
+              noteMessage.textContent =
+                error.message;
+            } finally {
+              deleteButton.disabled = false;
+            }
+          }
+        );
+
+        actions.append(editButton, deleteButton);
+        item.append(title, content, actions);
+        notesList.append(item);
+      }
+    }
+
+    async function loadNotes() {
+      const data = await noteRequest('GET');
+
+      if (!Array.isArray(data.notes)) {
+        throw new Error(
+          '서버에서 올바른 메모 목록을 받지 못했습니다.'
+        );
+      }
+
+      renderNotes(data.notes);
+
+      message.textContent =
+        `${data.notes.length}개의 메모를 불러왔습니다.`;
+    }
+
+    async function loadSecurityStatus(session) {
+      const securityMessage =
+        document.querySelector('#securityMessage');
+
+      try {
+        const response = await fetch(
+          '/api/security-status',
+          {
+            cache: 'no-store',
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`
+            }
+          }
+        );
+
+        if (
+          response.status === 401 ||
+          response.status === 403
+        ) {
+          securityPanel.classList.add('hidden');
           return;
         }
 
         if (!response.ok) {
-          throw new Error('보안 현황을 불러오지 못했습니다.');
+          throw new Error(
+            '보안 현황을 불러오지 못했습니다.'
+          );
         }
 
         const data = await response.json();
 
-        document.querySelector('#attemptCount').textContent =
+        document.querySelector(
+          '#attemptCount'
+        ).textContent =
           `${data.attempt_count}회`;
 
-        const threat = document.querySelector('#threatLevel');
-        threat.textContent = data.threat_level;
-        threat.style.color =
-          data.threat_level === 'ALERT' ? '#ff8585' : '#8ad8df';
+        const threat =
+          document.querySelector('#threatLevel');
 
-        securityMessage.textContent = '보안 현황 조회 완료';
-        panel.classList.remove('hidden');
+        threat.textContent = data.threat_level;
+
+        threat.style.color =
+          data.threat_level === 'ALERT'
+            ? '#ff8585'
+            : '#8ad8df';
+
+        securityMessage.textContent =
+          '보안 현황 조회 완료';
+
+        securityPanel.classList.remove('hidden');
+
       } catch (error) {
-        securityMessage.textContent = error.message;
+        securityMessage.textContent =
+          error.message;
       }
     }
 
@@ -155,97 +584,171 @@
 
       loginPanel.classList.add('hidden');
       vaultPanel.classList.remove('hidden');
-      document.querySelector('#securityPanel').classList.add('hidden');
-      document.querySelector('#userInfo').textContent =
+      securityPanel.classList.add('hidden');
+
+      document.querySelector(
+        '#userInfo'
+      ).textContent =
         `로그인 계정: ${session.user.email}`;
 
       message.textContent = '자료를 불러오는 중입니다.';
-      notesList.replaceChildren();
 
       try {
-        const response = await fetch('/api/note', {
-          cache: 'no-store',
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
-          }
-        });
-
-        if (response.status === 401) {
-          showLogin('인증이 만료되었습니다. 다시 로그인해 주세요.');
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error('보호된 자료를 불러올 수 없습니다.');
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data.notes)) {
-          throw new Error('자료 형식이 올바르지 않습니다.');
-        }
-
-        
-        renderNotes(data.notes);
-        message.textContent = `${data.notes.length}개의 자료를 불러왔습니다.`;
-
-        await loadSecurityStatus(session);
-
+        await loadNotes();
       } catch (error) {
         message.textContent = error.message;
       }
+
+      await loadSecurityStatus(session);
     }
 
-    document.querySelector('#loginForm')
-      .addEventListener('submit', async event => {
+    noteForm.addEventListener(
+      'submit',
+      async event => {
         event.preventDefault();
 
-        const button = document.querySelector('#loginButton');
-        button.disabled = true;
-        message.textContent = '로그인 중입니다.';
+        const title = noteTitle.value.trim();
+        const content = noteContent.value;
+
+        if (!title || !content.trim()) {
+          noteMessage.textContent =
+            '제목과 내용을 입력해 주세요.';
+          return;
+        }
+
+        saveNoteButton.disabled = true;
+        noteMessage.textContent = '저장 중...';
 
         try {
-          const email = document.querySelector('#email').value;
-          const password = document.querySelector('#password').value;
+          if (editingId === null) {
+            await noteRequest('POST', {
+              title,
+              content
+            });
 
-          const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-          });
+            noteMessage.textContent =
+              '메모가 추가되었습니다.';
+          } else {
+            await noteRequest('PUT', {
+              id: editingId,
+              title,
+              content
+            });
 
-          if (error) {
-            message.textContent = '로그인에 실패했습니다. 계정 정보를 확인해 주세요.';
-            return;
+            noteMessage.textContent =
+              '메모가 수정되었습니다.';
           }
 
-          document.querySelector('#password').value = '';
-          
-          
-    document.querySelector('#refreshSecurity')
-      .addEventListener('click', async () => {
+          resetEditor();
+          await loadNotes();
+
+        } catch (error) {
+          noteMessage.textContent = error.message;
+        } finally {
+          saveNoteButton.disabled = false;
+        }
+      }
+    );
+
+    cancelEditButton.addEventListener(
+      'click',
+      () => {
+        resetEditor();
+        noteMessage.textContent =
+          '수정을 취소했습니다.';
+      }
+    );
+
+    document.querySelector(
+      '#refreshNotes'
+    ).addEventListener(
+      'click',
+      async () => {
+        try {
+          await loadNotes();
+        } catch (error) {
+          message.textContent = error.message;
+        }
+      }
+    );
+
+    document.querySelector(
+      '#refreshSecurity'
+    ).addEventListener(
+      'click',
+      async () => {
         const { data: { session } } =
           await supabase.auth.getSession();
 
         if (session) {
           await loadSecurityStatus(session);
         }
-      });
+      }
+    );
+
+    document.querySelector(
+      '#loginForm'
+    ).addEventListener(
+      'submit',
+      async event => {
+        event.preventDefault();
+
+        const button =
+          document.querySelector('#loginButton');
+
+        button.disabled = true;
+        message.textContent = '로그인 중입니다.';
+
+        try {
+          const email =
+            document.querySelector('#email').value;
+
+          const password =
+            document.querySelector('#password').value;
+
+          const { error } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password
+            });
+
+          if (error) {
+            message.textContent =
+              '로그인에 실패했습니다. 계정 정보를 확인해 주세요.';
+            return;
+          }
+
+          document.querySelector(
+            '#password'
+          ).value = '';
 
           await loadVault();
+
+        } catch (error) {
+          message.textContent = error.message;
         } finally {
           button.disabled = false;
         }
-      });
+      }
+    );
 
-    document.querySelector('#logoutButton')
-      .addEventListener('click', async () => {
-        const { error } = await supabase.auth.signOut();
+    document.querySelector(
+      '#logoutButton'
+    ).addEventListener(
+      'click',
+      async () => {
+        const { error } =
+          await supabase.auth.signOut();
+
         if (error) {
-          message.textContent = '로그아웃에 실패했습니다.';
+          message.textContent =
+            '로그아웃에 실패했습니다.';
           return;
         }
+
         showLogin('로그아웃되었습니다.');
-      });
+      }
+    );
 
     await loadVault();
   </script>
