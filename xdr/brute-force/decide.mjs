@@ -3,7 +3,7 @@ const PATTERNS = Object.freeze({
   rapid: { minFailures: 40, maxMinutes: 3, minLevel: 10 },
   spray: { minAccounts: 8, minLevel: 10 },
   sustained: { minFailures: 40, minLevel: 10 },
-  suspicious: { minFailures: 2, minLevel: 5 }
+  suspicious: { minFailures: 5, minLevel: 5 }
 });
 const BLOCK = 0.85;
 const ALERT = 0.5;
@@ -42,8 +42,13 @@ export function decide(alert) {
     && count >= PATTERNS.sustained.minFailures
     && /비밀번호를 한 글자씩 바꿔|비밀번호를.*바꿔 넣는 실패/.test(description);
   const clear = !positiveSuccess && (spraying || rapid || sustained || passwordGuessing);
-  const suspicious = level >= PATTERNS.suspicious.minLevel
-    && (count >= PATTERNS.suspicious.minFailures || explicitSpray || /실패/.test(description));
+  // Do not alert on every T1110 failure: require a meaningful burst without a success,
+  // or evidence of multiple targeted accounts. Low-volume retries stay recorded.
+  const multiAccountAttempts = /두 계정에 실패|여러 계정에 실패/.test(description)
+    && Number.isFinite(count) && count >= 4;
+  const suspicious = !positiveSuccess && level >= PATTERNS.suspicious.minLevel
+    && ((Number.isFinite(count) && count >= PATTERNS.suspicious.minFailures)
+      || multiAccountAttempts);
   const confidence = clear ? 0.95 : suspicious ? 0.65 : 0.2;
   const action = confidence >= BLOCK ? 'block' : confidence >= ALERT ? 'alert' : 'record';
   const reason = clear
