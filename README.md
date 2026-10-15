@@ -158,3 +158,14 @@ Supabase의 테이블 권한을 확인하는 SQL을 실행하여 필요한 `SELE
 - 계약상 `stepUp.verified`와 `authAgeSeconds`가 제공되지만, 실제 재로그인 확인·자료 차단은 운영 엔진에서 별도 실측해야 합니다. 로컬 가상 연습은 운영 심판 결과가 아닙니다.
 
 Windows PowerShell 검증 명령: `npm.cmd install`, `npm.cmd run decider:test`, `npm.cmd run fixture:7`, `npm.cmd run bundle`. 번들 생성 전 커밋과 Git 상태를 확인합니다. `bundle-notes.json` 및 `artifacts/submission.json`은 커밋하지 않습니다.
+
+
+## 8단계 저장점 — 자원 구역별 접근 정책
+
+- 7단계 실제 채점 결과: 100점(학생 확인). 1~7단계 로그인·메모 소유권·기기 등록·추가 인증 규칙을 보존합니다.
+- 판정기 `resource_zone`: `notes` 서비스의 단일 ID 메모 경로와 `notices` 서비스의 단일 ID 공지 GET만 허용합니다. 메모 전체 목록, 공지 쓰기, 강사 자료, 알 수 없는 서비스·경로는 거부합니다.
+- 엔진 요청 계약의 `service`, `method`, `path`, `route`를 사용합니다. 브라우저 role, 쿼리 문자열, 클라이언트 제공 사용자 ID를 신뢰하지 않습니다.
+- 기존 실제 API `/api/note`, `/api/note/:id`는 검증된 로그인 주체와 DB `owner_id`를 비교합니다. 기존 화면 및 주소를 보존하기 위해 실제 API 경로는 변경하지 않았습니다. 판정기 가상 경로와 실제 API 경로는 서로 다른 계약입니다.
+- 별도 강사 공지 수정 API나 강사 권한 검증 계약은 확인되지 않았으므로 임의로 만들지 않았습니다. 실제 다른 구역 요청 및 본인 정상 요청은 운영 환경에서 별도 확인해야 합니다.
+
+Windows PowerShell: `npm.cmd install`, `npm.cmd run decider:test`, `npm.cmd run fixture:7`, `npm.cmd run bundle`. 로컬 테스트는 심판 점수가 아닙니다.
