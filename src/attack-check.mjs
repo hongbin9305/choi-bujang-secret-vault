@@ -1,5 +1,5 @@
 export async function runAttackChecks(config) {
-  if (config.step !== 3) {
+ if (config.step < 3) {
     throw new Error('3단계 공격 점검 설정을 확인해 주세요.');
   }
 
