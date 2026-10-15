@@ -22,9 +22,9 @@
     },
     {
       "alertId": "bf-04",
-      "action": "record",
-      "confidence": 0.05,
-      "reason": "no_confirmed_T1110_pattern"
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "rapid_failed_logins"
     },
     {
       "alertId": "bf-05",
@@ -48,7 +48,7 @@
       "alertId": "bf-08",
       "action": "block",
       "confidence": 0.95,
-      "reason": "rapid_failed_logins"
+      "reason": "repeated_failed_logins"
     },
     {
       "alertId": "bf-09",
@@ -58,9 +58,9 @@
     },
     {
       "alertId": "bf-10",
-      "action": "record",
-      "confidence": 0.05,
-      "reason": "no_confirmed_T1110_pattern"
+      "action": "alert",
+      "confidence": 0.65,
+      "reason": "moderate_failure_burst"
     },
     {
       "alertId": "bf-11",
@@ -172,8 +172,8 @@
     }
   ],
   "counts": {
-    "block": 6,
-    "alert": 3,
-    "record": 19
+    "block": 7,
+    "alert": 4,
+    "record": 17
   }
 }
