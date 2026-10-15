@@ -1,0 +1,31 @@
+{
+  "framework": "MITRE ATT&CK",
+  "technique": "T1190",
+  "patterns": [
+    {
+      "name": "repeated_sql_injection",
+      "condition": "T1190, level>=10, SQL injection/SQL syntax or database query chaining evidence, >=8 repeated requests from one source",
+      "evidence": "MITRE ATT&CK T1190: SQL injection exploits input handling in public-facing applications."
+    },
+    {
+      "name": "repeated_script_injection",
+      "condition": "T1190, level>=10, script injection marker evidence, >=8 repeated requests from one source",
+      "evidence": "MITRE ATT&CK T1190: repeated script payload injection targets public-facing input handling."
+    },
+    {
+      "name": "repeated_path_traversal",
+      "condition": "T1190, level>=10, repeated traversal/path escape evidence, >=8 requests from one source",
+      "evidence": "MITRE ATT&CK T1190: path traversal exploits insufficient path validation."
+    },
+    {
+      "name": "repeated_command_separator",
+      "condition": "T1190, level>=10, repeated command separator injection evidence, >=8 requests from one source",
+      "evidence": "MITRE ATT&CK T1190: command injection through public-facing request parameters."
+    },
+    {
+      "name": "single_suspicious_marker",
+      "condition": "T1190, level>=6, one explicit injection-like marker without repetition; exclude educational terms and normal queries",
+      "evidence": "MITRE ATT&CK T1190: an isolated suspicious marker merits review, not automatic blocking."
+    }
+  ]
+}
