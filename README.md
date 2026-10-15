@@ -180,3 +180,22 @@ Windows PowerShell: `npm.cmd install`, `npm.cmd run decider:test`, `npm.cmd run 
 - 실제 회수 API, 세션 무효화 및 운영 반 엔진 연결은 구현하지 않았습니다. 로컬 연습은 운영 심판 결과가 아닙니다.
 
 Windows PowerShell: `npm.cmd install`, `npm.cmd run detect:test`, `npm.cmd run bundle`. 실행되지 않은 점검은 미실행으로 기록합니다.
+
+
+## 10단계 저장점 — 검증된 메모 사본에서 한 건 복원
+
+- 9단계 실제 점수는 이번 저장점 작성 시 미확인입니다. 1~9단계의 인증·접근 정책·탐지 규칙은 변경하지 않았습니다.
+- Supabase `public.defense_note_backups`에 2026-10-15 현재 상태의 비공개 기준 사본 5건을 생성하고 SHA-256 내용 해시 5/5 일치를 확인했습니다. 이는 과거 침해 전 백업이 아니라 현재 시점의 스냅샷입니다.
+- 복구 서비스: `POST /api/restore/note`. 인증된 사용자 자신의 백업 메모 ID만 요청하며 JSON `{"id":123}`을 받습니다. 검증된 JWT의 `userId`로 소유자를 결정합니다.
+- DB `restore_defense_note` 함수는 서버 전용 권한으로만 실행하고, 백업 소유자·ID·내용 SHA-256을 재검증합니다. 지정된 한 건만 INSERT/UPDATE하고, 다른 메모 및 `security_events` 감사 이력은 수정하지 않습니다.
+- 현재 운영 정책을 자동 덮어쓰는 정책 복원은 하지 않습니다. Git에 저장된 `src/decider.mjs` 및 `aleph.config.json`의 안전 버전과 현재 변경 사항을 비교·검토한 뒤 별도 승인하에 복원해야 합니다. 정책 사본의 독립적인 사전 검증 및 운영 정책 복구 시험은 미실행입니다.
+- 시험 계정 B의 ID 및 인증 토큰은 공개 저장소에 저장하지 않습니다. 복원 API 실제 호출·삭제 후 복원·A/B 교차 접근 검증은 미실행입니다.
+
+복구 후 회귀 점검 순서:
+1. `npm.cmd install` 및 `npm.cmd run build`로 의존성·배포 빌드를 확인합니다.
+2. 비로그인 `GET /api/note`가 401인지 확인합니다.
+3. A 본인 메모 정상 조회/수정, B의 A 메모 조회·수정·삭제 404를 확인합니다.
+4. 등록되지 않은 기기 거부, 복합 이상 접속 step-up, 메모·공지 구역 거부를 `npm.cmd run decider:test` 및 `npm.cmd run fixture:7`로 연습합니다.
+5. `npm.cmd run detect:test`로 정상 120건 observe 및 121건 propose_revocation을 확인합니다.
+6. 시험 계정 B의 한 건을 의도적으로 변조/삭제하기 전, 백업 ID·소유자·해시와 복원 대상 및 영향 범위를 확인합니다. 승인된 시험에서만 `POST /api/restore/note`로 복원하고 복원 후 해시를 재검증합니다.
+7. `npm.cmd run bundle` 실행 전 git 상태 및 마지막 커밋을 확인합니다. 미실행 점검을 통과로 표시하지 않습니다.
