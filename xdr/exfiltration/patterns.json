@@ -1,0 +1,28 @@
+{
+  "framework": [
+    "MITRE ATT&CK T1041",
+    "MITRE ATT&CK T1048"
+  ],
+  "patterns": [
+    {
+      "name": "large_unfamiliar_destination",
+      "condition": "T1041 or T1048, severity >=10, destination exists, >=50 MB sent, and first-seen destination or clearly abnormal bulk data transfer",
+      "evidence": "T1041 and T1048 describe exfiltration through command channels or alternate network protocols."
+    },
+    {
+      "name": "repeated_bulk_exfiltration",
+      "condition": "T1041 or T1048, severity >=10, destination exists, >=50 MB and repeated transfers or many files",
+      "evidence": "Repeated high-volume outbound transfers can indicate staged data exfiltration."
+    },
+    {
+      "name": "off_hours_archive_transfer",
+      "condition": "T1048, severity >=10, destination exists, >=50 MB, compressed archive and unfamiliar destination or off-hours activity",
+      "evidence": "T1048 includes exfiltration using an alternate protocol, and anomalous archive transfer is a supporting indicator."
+    },
+    {
+      "name": "weak_outbound_anomaly",
+      "condition": "T1041 or T1048 and severity 5-9 with isolated, unverified or low-volume transfer anomalies",
+      "evidence": "A single outbound transfer or small archive is insufficient to establish confirmed exfiltration."
+    }
+  ]
+}
