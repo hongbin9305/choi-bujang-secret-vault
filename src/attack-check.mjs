@@ -64,7 +64,7 @@ export async function runAttackChecks(config) {
     {
       attackId: 'anonymous_note_read',
       expected: '비로그인 메모 조회 요청에 HTTP 401 또는 403과 JSON 오류 응답',
-      observed: `비로그인 메모 조회 차단 확인 (HTTP ${response.status}, JSON 오류 응답)`
+      observed: 'not_run'
     }
   ];
 }
