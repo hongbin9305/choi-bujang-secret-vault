@@ -199,3 +199,14 @@ Windows PowerShell: `npm.cmd install`, `npm.cmd run detect:test`, `npm.cmd run b
 5. `npm.cmd run detect:test`로 정상 120건 observe 및 121건 propose_revocation을 확인합니다.
 6. 시험 계정 B의 한 건을 의도적으로 변조/삭제하기 전, 비공개 사본을 **다시 읽고** 해당 사본의 **ID·소유자·내용 SHA-256 해시**를 각각 검증합니다. 사본이 없거나 무결성 검증에 실패하면 복원을 중단합니다. 승인된 시험에서만 `POST /api/restore/note`로 지정한 한 건을 복원한 뒤, **복원된 메모의 ID와 사본 ID, 소유자와 사본 소유자, 복원 내용에서 재계산한 SHA-256 해시와 사본 내용 해시를 각각 대조**합니다. 세 항목 모두 일치해야 성공으로 기록하며, 다른 메모·감사 기록의 불변 여부도 확인합니다. 실제 복원 시험은 **미실행**입니다.
 7. `npm.cmd run bundle` 실행 전 git 상태 및 마지막 커밋을 확인합니다. 미실행 점검을 통과로 표시하지 않습니다.
+
+
+## 11단계 저장점 — 설치형 웹앱과 서버 기기 승인 대기
+
+- 10단계 채점 피드백에 따른 README 수정 후 학생이 해결됐다고 확인했습니다. 1~10단계 정책 판정기, 탐지기, 복구 API와 데이터는 보존합니다.
+- `public/manifest.webmanifest`를 추가해 기존 자료실을 설치형 웹앱으로 표시합니다. 설치 자체는 기기 등록·인증이 아닙니다. 네트워크가 끊기면 오프라인 안내를 표시하며 보호 메모를 오프라인에 캐시하지 않습니다.
+- 기기 승인 서비스 `GET /api/device-approval`(상태 조회), `POST /api/device-approval`(승인 요청). 검증된 로그인 주체의 요청을 Supabase 비공개 `defense_device_requests` 테이블에 `pending`으로 기록합니다. 기기 임의 식별값은 HttpOnly·Secure·SameSite=Strict 쿠키로 전송하고 DB에는 SHA-256 해시만 저장합니다. 브라우저 localStorage/sessionStorage에 **기기 키를 저장하지 않습니다**.
+- 승인 버튼은 요청만 접수하며 `approved` 상태를 부여하지 않습니다. 서버에서 `approved`로 바뀌고 상태 조회가 확인된 경우에만 웹 화면에서 기존 자료실을 엽니다. 관리자 승인 작업은 별도 권한으로 수행해야 하며 현재 승인 관리 UI는 없습니다.
+- **제약:** 기존 메모 API는 기존 JWT 소유권 검사 그대로이며 기기 승인 또는 요청 서명을 서버 API에서 강제하지 않습니다. 쿠키 기반 식별은 암호학적 요청 서명이 아니므로 경로·본문 변조 방어를 검증했다고 볼 수 없습니다. 승인된 실제 기기 및 운영 서명 검증 시험은 **미실행**입니다.
+
+Windows PowerShell 확인: `npm.cmd install`, `npm.cmd run build`, `npm.cmd run decider:test`, `npm.cmd run detect:test`, `npm.cmd run bundle`. 웹앱에서는 로그인 전 자료 없음 → 승인 요청 후 대기 상태 → 서버 승인 시에만 화면 표시 순으로 확인합니다. 서버에서 승인되지 않은 요청의 직접 API 접근 차단은 별도 보완 필요합니다. 실행하지 않은 테스트는 미실행입니다.
