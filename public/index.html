@@ -289,6 +289,8 @@
       <p id="securityMessage" role="status"></p>
     </section>
 
+    <section id="operationsPanel" class="panel hidden"><h2>탈환 작전실</h2><p>서버에서 확인된 결과만 표시합니다. 41종 총공세 시험은 별도 실측 전까지 미실행입니다.</p><button id="refreshOperations" type="button">실제 상태 조회</button><p id="operationsStatus" role="status">조회 전 · 미실행</p><table id="operationsTable" style="width:100%;text-align:left;overflow-wrap:anywhere"></table><h3>1~11단계 회귀 점검 기록</h3><p>기대값은 실제 결과가 아닙니다. 요청 ID와 확인 시각이 없는 항목은 미실행입니다.</p><table id="replayTable" style="width:100%;text-align:left"><thead><tr><th>시험</th><th>기대</th><th>실제 / ID / 시각</th></tr></thead><tbody></tbody></table></section>
+
     <p id="message" role="status"
       aria-live="polite">
       인증 상태 확인 중...
@@ -305,6 +307,46 @@
 
     const securityPanel =
       document.querySelector('#securityPanel');
+    const operationsPanel = document.querySelector('#operationsPanel');
+    const replayCases = [
+      ['1 무인증 조회','401 거부'],['2 로그인 후 본인 조회','200 허용'],
+      ['3 타인 메모 조회','404 거부'],['4 타인 메모 수정','404 거부'],
+      ['5 비인가 접근 사건','거부 및 기록'],['6 미등록 기기','deny'],
+      ['7 복합 이상 접속','step_up'],['8 구역 밖 조회','deny'],
+      ['9 조회 폭주 121건','propose_revocation'],['10 한 건 복구','ID·소유자·해시 일치'],
+      ['11 미승인 기기 화면','자료 없음'],['11 승인 기기 화면','서버 승인 후 허용']
+    ];
+    const replayBody=document.querySelector('#replayTable tbody');
+    for(const [name,expected] of replayCases){
+      const tr=document.createElement('tr');
+      for(const value of [name,expected,'미실행 / — / —']){
+        const td=document.createElement('td');td.textContent=value;td.style.padding='6px';tr.append(td);
+      }
+      replayBody.append(tr);
+    }
+    async function loadOperations(){
+      const target=document.querySelector('#operationsStatus');
+      try{
+        const session=await getSession();
+        const response=await fetch('/api/operations',{cache:'no-store',headers:{Authorization:`Bearer ${session.access_token}`}});
+        if(response.status===403){operationsPanel.classList.add('hidden');return;}
+        if(!response.ok) throw new Error('작전실 API 결과 확인 불가');
+        const data=await response.json();
+        operationsPanel.classList.remove('hidden');
+        target.textContent='서버 조회 시각: '+data.checkedAt+' · 41종 총공세 미실행';
+        const table=document.querySelector('#operationsTable');table.replaceChildren();
+        const rows=[
+          ['판정기 규칙',data.policy.ruleIds.join(', ')+' / 운영 엔진 미확인'],
+          ['탐지 사건 (최근 5분)',String(data.detection.observedEvents)+'건 · 서버 기록 기준'],
+          ['회수 상태','운영 회수 미확인'],
+          ['복구 사본',data.restore.snapshotAvailable?'현재 사본 조회 가능 · 복구 실측 미확인':'조회 불가'],
+          ['기기 승인',data.deviceApproval.counts?JSON.stringify(data.deviceApproval.counts):'조회 불가'],
+          ['41종 공격','0건 실측 / 41건 미실행']
+        ];
+        for(const [k,v] of rows){const tr=document.createElement('tr');for(const text of [k,v]){const td=document.createElement('td');td.textContent=text;td.style.padding='8px';tr.append(td);}table.append(tr);}
+      }catch(error){target.textContent=error.message;}
+    }
+    document.querySelector('#refreshOperations').addEventListener('click',loadOperations);
 
     const message =
       document.querySelector('#message');
@@ -388,6 +430,7 @@
       loginPanel.classList.remove('hidden');
       vaultPanel.classList.add('hidden');
       securityPanel.classList.add('hidden');
+      operationsPanel.classList.add('hidden');
 
       notesList.replaceChildren();
       currentNotes = [];
@@ -652,6 +695,7 @@ const error = null;
       }
 
       await loadSecurityStatus(session);
+      await loadOperations();
     }
 
     noteForm.addEventListener(
