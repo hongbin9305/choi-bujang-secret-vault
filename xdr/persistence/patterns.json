@@ -1,0 +1,28 @@
+{
+  "framework": [
+    "MITRE ATT&CK T1543",
+    "MITRE ATT&CK T1053"
+  ],
+  "patterns": [
+    {
+      "name": "unsigned_temp_service",
+      "condition": "T1543: new or modified unsigned service executing from a temporary directory, or repeated unsigned service registrations",
+      "evidence": "T1543 covers adversarial creation or modification of system services for persistence."
+    },
+    {
+      "name": "suspicious_scheduled_task",
+      "condition": "T1053: unfamiliar scheduled task executing a temporary-directory program or linked to startup persistence",
+      "evidence": "T1053 covers scheduled tasks used to maintain execution and persistence."
+    },
+    {
+      "name": "unrecognized_startup_entry",
+      "condition": "T1543: previously unknown startup program, especially linked to another persistence mechanism",
+      "evidence": "Unexpected autostart registration may indicate a persistence mechanism; require corroboration before blocking."
+    },
+    {
+      "name": "weak_persistence_indicator",
+      "condition": "T1543 or T1053 low severity or isolated unverified change without a clear executable persistence chain",
+      "evidence": "Single task or service changes can be administrative activity; review without automatic isolation."
+    }
+  ]
+}
