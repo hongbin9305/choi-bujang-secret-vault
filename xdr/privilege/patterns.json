@@ -1,0 +1,28 @@
+{
+  "framework": [
+    "MITRE ATT&CK T1068",
+    "MITRE ATT&CK T1078"
+  ],
+  "patterns": [
+    {
+      "name": "unexpected_admin_membership",
+      "condition": "T1078 and high severity: ordinary account added to administrators, especially remotely or in bulk",
+      "evidence": "T1078 covers misuse of valid accounts and unexpected privileged account access."
+    },
+    {
+      "name": "unexpected_privileged_command",
+      "condition": "T1068 and high severity: first-seen source, another identity, or newly elevated account runs privileged command",
+      "evidence": "T1068 describes privilege escalation; anomalous privileged command use warrants isolation review."
+    },
+    {
+      "name": "admin_session_escalation",
+      "condition": "T1068 high severity: session unexpectedly becomes administrative from previously unseen source",
+      "evidence": "Unexpected elevation of an authenticated session can enable privilege escalation."
+    },
+    {
+      "name": "weak_privilege_indicator",
+      "condition": "T1068 or T1078 with low-to-medium severity and unconfirmed or isolated permission activity",
+      "evidence": "Isolated group changes and failed privilege prompts can be legitimate; notify before blocking."
+    }
+  ]
+}
