@@ -1,0 +1,21 @@
+{
+  "framework": "MITRE ATT&CK T1190",
+  "cve": "CVE-2021-44228",
+  "patterns": [
+    {
+      "name": "log4shell_jndi_lookup",
+      "condition": "T1190 with explicit ${jndi:ldap://...}, ${jndi:rmi://...}, or ${jndi:dns://...} in request headers or parameters, or unequivocal Log4Shell exploit description; level >= 10",
+      "evidence": "CVE-2021-44228: Log4j JNDI lookup injection can trigger remote code loading from attacker-controlled endpoints."
+    },
+    {
+      "name": "log4shell_repeated_probe",
+      "condition": "T1190 and explicit remote lookup with repeated requests or vulnerability scanning evidence, level >= 10",
+      "evidence": "MITRE ATT&CK T1190: known public-facing application vulnerabilities are targeted with automated probes."
+    },
+    {
+      "name": "weak_cve_indicator",
+      "condition": "T1190-tagged low-confidence CVE/JNDI references without complete remote lookup payload",
+      "evidence": "A CVE identifier or JNDI keyword alone is not a confirmed exploitation payload; investigate without blocking."
+    }
+  ]
+}
