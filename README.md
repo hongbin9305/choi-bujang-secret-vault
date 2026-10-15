@@ -238,3 +238,13 @@ Windows PowerShell 확인: `npm.cmd install`, `npm.cmd run build`, `npm.cmd run 
 - `respond.mjs`는 고확신 차단 후보만 만료 시각·근거 경보 ID와 함께 `xdr/deny-rules.json`에 저장하고, 알림을 `xdr/alerts.log`에 추가합니다. 기존 ZTNA `src/decider.mjs` 규칙은 변경하지 않았습니다. **실제 엔진에 후보 규칙 적용은 미연결·미실행**입니다.
 - fixture 28건을 동일 판단 조건으로 분류한 `xdr/brute-force/result.json`: **block 6, alert 3, record 19, 정상 이벤트 block 0**. 원본 경보의 비밀값은 결과에 포함하지 않습니다. 로컬 `npm run xdr:run -- brute-force` 실행은 이 환경의 GitHub 접근 제한으로 **미실행**이며, 저장된 결과와 실제 Node 실행 결과가 일치하는지 재확인이 필요합니다.
 - 확인 명령: `npm run xdr:run -- brute-force`; `xdr/brute-force/result.json`의 counts 및 bf-20~bf-28이 record인지 확인합니다. 정상 이벤트가 block이면 해당 조건을 보수적으로 수정합니다.
+
+
+## 보너스 xdr-02 저장점 — 웹 주입 공격 탐지
+
+- `xdr/web-injection/decide.mjs`는 MITRE ATT&CK T1190 기반 독립형 판단 모듈이며 외부 import 및 파일 입출력이 없습니다.
+- `patterns.json`에 SQL·스크립트·경로 이탈·명령 구분자 반복 패턴과 근거를 기록했습니다.
+- `read-alerts.mjs`는 원본 경보를 수정하지 않고 확인용 필드만 추출합니다.
+- `respond.mjs`는 10분 만료되는 별도 차단 후보 규칙과 알림 로그를 작성하며 기존 ZTNA 정책은 수정하지 않습니다.
+- 사용자 로컬 실행 `npm.cmd run xdr:run -- web-injection` 결과: block 8 / alert 9 / record 9, 정상 이벤트 차단 0건(2026-10-15 확인). 실제 심판 채점은 별도입니다.
+- Windows PowerShell 재실행: `npm.cmd run xdr:run -- web-injection`; 결과: `xdr/web-injection/result.json`.
