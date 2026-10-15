@@ -210,3 +210,8 @@ Windows PowerShell: `npm.cmd install`, `npm.cmd run detect:test`, `npm.cmd run b
 - **제약:** 기존 메모 API는 기존 JWT 소유권 검사 그대로이며 기기 승인 또는 요청 서명을 서버 API에서 강제하지 않습니다. 쿠키 기반 식별은 암호학적 요청 서명이 아니므로 경로·본문 변조 방어를 검증했다고 볼 수 없습니다. 승인된 실제 기기 및 운영 서명 검증 시험은 **미실행**입니다.
 
 Windows PowerShell 확인: `npm.cmd install`, `npm.cmd run build`, `npm.cmd run decider:test`, `npm.cmd run detect:test`, `npm.cmd run bundle`. 웹앱에서는 로그인 전 자료 없음 → 승인 요청 후 대기 상태 → 서버 승인 시에만 화면 표시 순으로 확인합니다. 서버에서 승인되지 않은 요청의 직접 API 접근 차단은 별도 보완 필요합니다. 실행하지 않은 테스트는 미실행입니다.
+
+### 11단계 채점 피드백 수정
+- `public/index.html`의 로그인 토큰과 사용자 이메일을 브라우저 저장소가 아닌 페이지 메모리 변수로만 유지합니다. 승인 조회, 메모 요청, 보안 조회, 로그아웃 및 재로그인 흐름에서 같은 메모리 토큰을 사용합니다. 새로고침 시 재로그인이 필요합니다.
+- `public/manifest.webmanifest` JSON 파싱과 앱 이름 `BYTE BACK 보안 자료실`, 시작 경로 `/`, scope `/`, standalone 설정을 확인했습니다. **배포 후** `https://choi-bujang-secret-vault-five-kappa.vercel.app/manifest.webmanifest`에서 200 응답과 JSON 내용이 표시되는지 직접 확인해야 합니다(배포 응답 미확인).
+- 서버에서 승인 상태 `approved`를 반환할 때만 기존 메모 화면을 표시하는 흐름은 유지합니다. 기기 승인 및 실제 화면 확인은 미실행입니다.
