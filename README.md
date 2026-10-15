@@ -229,3 +229,12 @@ Windows PowerShell 확인: `npm.cmd install`, `npm.cmd run build`, `npm.cmd run 
 - 중지: Vercel에서 해당 프로젝트 배포를 중단하거나 이전 검증 배포로 롤백합니다. DB를 임의로 삭제하지 않습니다.
 - 복구: 10단계 README의 사본 재검증 → 버전·diff·변경 범위 사전 확인 → 승인된 시험 정책만 복원 순서를 따릅니다. 한 건의 메모만 `POST /api/restore/note`로 복구하고 ID·소유자·내용 SHA-256 해시를 각각 대조합니다. 사본 부재·검증 실패 시 중단합니다. 실복구 시험은 미실행입니다.
 - 현재 12단계 새 API·UI의 운영 배포 및 41종 실측, `npm run bundle` 실행은 **미실행**입니다. 로컬 테스트를 심판 결과로 기재하지 않습니다.
+
+
+## 보너스 xdr-01 저장점 — 무차별 로그인 경보
+
+- 원본 Wazuh 경보 `xdr/fixtures/brute-force.json`은 수정하지 않았습니다. `xdr/brute-force/read-alerts.mjs`는 시각·출발 주소·계정·규칙 수준·설명만 추출하며 인증 비밀값을 반환하지 않습니다.
+- MITRE ATT&CK T1110 및 T1110.003에 근거한 패턴은 `patterns.json`에 정리했습니다. `decide.mjs`는 외부 import, 파일 접근, 네트워크 요청 없이 개별 경보를 `block`(confidence >= 0.85), `alert`(>= 0.5), `record`로 분류합니다.
+- `respond.mjs`는 고확신 차단 후보만 만료 시각·근거 경보 ID와 함께 `xdr/deny-rules.json`에 저장하고, 알림을 `xdr/alerts.log`에 추가합니다. 기존 ZTNA `src/decider.mjs` 규칙은 변경하지 않았습니다. **실제 엔진에 후보 규칙 적용은 미연결·미실행**입니다.
+- fixture 28건을 동일 판단 조건으로 분류한 `xdr/brute-force/result.json`: **block 6, alert 3, record 19, 정상 이벤트 block 0**. 원본 경보의 비밀값은 결과에 포함하지 않습니다. 로컬 `npm run xdr:run -- brute-force` 실행은 이 환경의 GitHub 접근 제한으로 **미실행**이며, 저장된 결과와 실제 Node 실행 결과가 일치하는지 재확인이 필요합니다.
+- 확인 명령: `npm run xdr:run -- brute-force`; `xdr/brute-force/result.json`의 counts 및 bf-20~bf-28이 record인지 확인합니다. 정상 이벤트가 block이면 해당 조건을 보수적으로 수정합니다.
