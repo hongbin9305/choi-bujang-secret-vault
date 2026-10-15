@@ -1,0 +1,11 @@
+{
+  "name": "BYTE BACK 보안 자료실",
+  "short_name": "BYTE BACK",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101a28",
+  "theme_color": "#101a28",
+  "description": "인증된 사용자를 위한 보안 자료실. 오프라인에서는 보호 자료를 볼 수 없습니다.",
+  "icons": []
+}
