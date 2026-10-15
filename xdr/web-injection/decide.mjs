@@ -39,9 +39,11 @@ export function decide(alert) {
     const isolated = /주입처럼 보이는 표기가 1건/.test(description)
       && count === PATTERNS.single_suspicious_marker.maxCount
       && level >= PATTERNS.single_suspicious_marker.minLevel;
-    if (isolated) {
-      confidence = 0.65;
-      reason = 'single_suspicious_marker';
+    // T1190-tagged weak or isolated anomalies remain review-only: never block
+    // on an educational keyword, a lone quote, or a single ambiguous marker.
+    if (level >= PATTERNS.single_suspicious_marker.minLevel - 1) {
+      confidence = 0.6;
+      reason = isolated ? 'single_suspicious_marker' : 'weak_T1190_indicator';
     }
   }
   return { action: confidence >= BLOCK_THRESHOLD ? 'block'
