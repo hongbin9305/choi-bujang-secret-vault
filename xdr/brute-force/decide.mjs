@@ -16,7 +16,7 @@ export function decide(alert) {
   const positiveSuccess = /성공|로그아웃|세션 유지|상태가 유지|화면이 열렸/.test(
     description.replace(/성공은 없습니다|성공이 없습니다|성공하지 못했습니다/g, '')
   );
-  const failed = /실패|비밀번호를 .*넣었/.test(description);
+  const failed = /실패|비밀번호를 .*넣었|비밀번호를 연속으로 넣었/.test(description);
   if (!mitre || !hasSource || !hasAccount || !failed || positiveSuccess || !Number.isFinite(level)) {
     return { action: 'record', confidence: 0.05, reason: 'no_confirmed_T1110_pattern' };
   }
