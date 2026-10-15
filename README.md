@@ -169,3 +169,14 @@ Windows PowerShell 검증 명령: `npm.cmd install`, `npm.cmd run decider:test`,
 - 별도 강사 공지 수정 API나 강사 권한 검증 계약은 확인되지 않았으므로 임의로 만들지 않았습니다. 실제 다른 구역 요청 및 본인 정상 요청은 운영 환경에서 별도 확인해야 합니다.
 
 Windows PowerShell: `npm.cmd install`, `npm.cmd run decider:test`, `npm.cmd run fixture:7`, `npm.cmd run bundle`. 로컬 테스트는 심판 점수가 아닙니다.
+
+
+## 9단계 저장점 — 조회 폭주 탐지와 회수 제안
+
+- 8단계 실제 심판 결과: 100점(학생 확인). 1~8단계 인증·메모 소유권·기기 등록·추가 인증·구역 정책은 그대로 보존합니다.
+- `src/detect.mjs`의 `detect(events)`는 엔진이 검증해 제공하는 `at`, `method`, `identity.sub`만 사용합니다.
+- 같은 가명 사용자에 대해 어느 10분 구간에서든 GET 121건 이상이면 `{action:"propose_revocation",reasonCode:"burst_read",subject:sub}`를 반환합니다. 정상 사건은 `{action:"observe"}`만 반환합니다.
+- 다른 사용자의 조회는 합산하지 않고, 10분 밖의 사건을 같은 묶음으로 취급하지 않습니다. 메모 내용·토큰·실명·기기 번호를 저장하거나 출력하지 않습니다.
+- 실제 회수 API, 세션 무효화 및 운영 반 엔진 연결은 구현하지 않았습니다. 로컬 연습은 운영 심판 결과가 아닙니다.
+
+Windows PowerShell: `npm.cmd install`, `npm.cmd run detect:test`, `npm.cmd run bundle`. 실행되지 않은 점검은 미실행으로 기록합니다.
