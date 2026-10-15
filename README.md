@@ -215,3 +215,17 @@ Windows PowerShell 확인: `npm.cmd install`, `npm.cmd run build`, `npm.cmd run 
 - `public/index.html`의 로그인 토큰과 사용자 이메일을 브라우저 저장소가 아닌 페이지 메모리 변수로만 유지합니다. 승인 조회, 메모 요청, 보안 조회, 로그아웃 및 재로그인 흐름에서 같은 메모리 토큰을 사용합니다. 새로고침 시 재로그인이 필요합니다.
 - `public/manifest.webmanifest` JSON 파싱과 앱 이름 `BYTE BACK 보안 자료실`, 시작 경로 `/`, scope `/`, standalone 설정을 확인했습니다. **배포 후** `https://choi-bujang-secret-vault-five-kappa.vercel.app/manifest.webmanifest`에서 200 응답과 JSON 내용이 표시되는지 직접 확인해야 합니다(배포 응답 미확인).
 - 서버에서 승인 상태 `approved`를 반환할 때만 기존 메모 화면을 표시하는 흐름은 유지합니다. 기기 승인 및 실제 화면 확인은 미실행입니다.
+
+
+## 12단계 저장점 — 탈환 작전실과 실측 증거
+
+- 11단계 실제 심판 통과는 학생이 확인했습니다. 1~11단계 메모·인증·기기 승인·판정·탐지·복구 기능을 보존합니다.
+- 작전실 UI는 기존 `public/index.html`에 포함되며, 관리자에게만 `GET /api/operations`를 통해 서버에서 확인한 최근 5분 `security_events` 사건 수, 기기 승인 상태별 수, 비공개 복구 사본의 조회 가능 여부를 표시합니다. 메모 본문·기기 키·토큰·소유자 식별자는 반환하지 않습니다.
+- 학생 판정기 규칙은 `src/decider.mjs`의 `RULE_IDS`를 읽어 표시합니다. 실제 ALEPH SDP 엔진의 판정 호출·회수·복구 실행 성공을 추정하지 않습니다. 복구 버전은 현재 시점 스냅샷이며 사전 침해 백업이라고 주장하지 않습니다.
+- **제공 엔진:** ALEPH SDP 엔진(심판·운영 측 제공). **학생 구현:** `src/decider.mjs`, `src/detect.mjs`, `api/`, `public/`, 정책 및 회귀 점검 문서. 엔진 자체는 학생 저장소에 포함되지 않습니다.
+- 회귀 점검 표: 무인증 조회 401, 로그인 후 본인 조회 200, 타인 메모 조회·수정 404, 비인가 사건 기록, 미등록 기기 deny, 복합 이상 접속 step_up, 구역 밖 조회 deny, 조회 폭주 회수 제안, 단일 메모 복구의 ID·소유자·해시 일치, 승인 전 화면 차단 및 승인 후 화면 허용. 표의 **기대 결과는 실측 결과가 아닙니다.** 각 시험을 실행한 경우에만 요청 ID, 확인 시각(ISO-8601), 실제 HTTP 응답/판정, 기대값과의 일치 여부를 기록합니다. 현재 총공세 **41종 모두 미실행**, 통과 0건(미실행은 실패 판정 아님).
+- 재현 절차: `git clone https://github.com/hongbin9305/choi-bujang-secret-vault.git` → `cd choi-bujang-secret-vault` → `npm install` → `npm run build` → `npm run decider:test` → `npm run detect:test` → `npm run bundle`. 마지막 명령은 깨끗한 Git 상태·유효한 origin·로컬 `bundle-notes.json`이 필요합니다. `artifacts/submission.json`과 `bundle-notes.json`은 커밋하지 않습니다.
+- 실행/배포: Vercel에 GitHub `main`을 연결하고 `npm run build`로 `public/`을 배포합니다. Supabase 환경변수는 Vercel 비밀 설정에만 저장합니다. 앱 주소는 `aleph.config.json`의 `publicAppUrl`을 사용합니다.
+- 중지: Vercel에서 해당 프로젝트 배포를 중단하거나 이전 검증 배포로 롤백합니다. DB를 임의로 삭제하지 않습니다.
+- 복구: 10단계 README의 사본 재검증 → 버전·diff·변경 범위 사전 확인 → 승인된 시험 정책만 복원 순서를 따릅니다. 한 건의 메모만 `POST /api/restore/note`로 복구하고 ID·소유자·내용 SHA-256 해시를 각각 대조합니다. 사본 부재·검증 실패 시 중단합니다. 실복구 시험은 미실행입니다.
+- 현재 12단계 새 API·UI의 운영 배포 및 41종 실측, `npm run bundle` 실행은 **미실행**입니다. 로컬 테스트를 심판 결과로 기재하지 않습니다.
