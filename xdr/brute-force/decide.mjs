@@ -46,13 +46,9 @@ export function decide(alert) {
     && count >= 30 && minutes <= PATTERNS.rapid.maxMinutes
     && /계정 이름을 바꿔|계정을 바꿔|여러 계정을 바꿔/.test(description);
   const clear = !positiveSuccess && (spraying || rapid || sustained || passwordGuessing || accountRotation);
-  // Do not alert on every T1110 failure: require a meaningful burst without a success,
-  // or evidence of multiple targeted accounts. Low-volume retries stay recorded.
-  const multiAccountAttempts = /두 계정에 실패|여러 계정에 실패/.test(description)
-    && Number.isFinite(count) && count >= 4;
-  const suspicious = !positiveSuccess && level >= PATTERNS.suspicious.minLevel
-    && ((Number.isFinite(count) && count >= PATTERNS.suspicious.minFailures)
-      || multiAccountAttempts);
+  // T1110-tagged failures with a valid source and account are suspicious even
+  // when low-volume or followed by a success; they are not clear attacks.
+  const suspicious = level >= PATTERNS.suspicious.minLevel && failure;
   const confidence = clear ? 0.95 : suspicious ? 0.65 : 0.2;
   const action = confidence >= BLOCK ? 'block' : confidence >= ALERT ? 'alert' : 'record';
   const reason = clear
