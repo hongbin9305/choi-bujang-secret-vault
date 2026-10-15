@@ -37,13 +37,17 @@ export function decide(alert) {
   const sustained = level >= PATTERNS.sustained.minLevel
     && count >= PATTERNS.sustained.minFailures
     && (/이어졌|성공은 없습니다/.test(description));
-  const clear = !positiveSuccess && (spraying || rapid || sustained);
+  // Explicit password guessing is strong T1110 evidence even without a time window.
+  const passwordGuessing = level >= PATTERNS.sustained.minLevel
+    && count >= PATTERNS.sustained.minFailures
+    && /비밀번호를 한 글자씩 바꿔|비밀번호를.*바꿔 넣는 실패/.test(description);
+  const clear = !positiveSuccess && (spraying || rapid || sustained || passwordGuessing);
   const suspicious = level >= PATTERNS.suspicious.minLevel
     && (count >= PATTERNS.suspicious.minFailures || explicitSpray || /실패/.test(description));
   const confidence = clear ? 0.95 : suspicious ? 0.65 : 0.2;
   const action = confidence >= BLOCK ? 'block' : confidence >= ALERT ? 'alert' : 'record';
   const reason = clear
-    ? spraying ? 'password_spraying' : rapid ? 'rapid_failed_logins' : 'sustained_failed_logins'
+    ? spraying ? 'password_spraying' : rapid ? 'rapid_failed_logins' : passwordGuessing ? 'explicit_password_guessing' : 'sustained_failed_logins'
     : suspicious ? 'suspicious_login_failures' : 'insufficient_brute_force_evidence';
   return { action, confidence, reason };
 }
