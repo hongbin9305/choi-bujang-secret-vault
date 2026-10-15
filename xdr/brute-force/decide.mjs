@@ -41,7 +41,11 @@ export function decide(alert) {
   const passwordGuessing = level >= PATTERNS.sustained.minLevel
     && count >= PATTERNS.sustained.minFailures
     && /비밀번호를 한 글자씩 바꿔|비밀번호를.*바꿔 넣는 실패/.test(description);
-  const clear = !positiveSuccess && (spraying || rapid || sustained || passwordGuessing);
+  // Account rotation with a dense burst is an explicit brute-force pattern, even below 40 failures.
+  const accountRotation = level >= PATTERNS.rapid.minLevel
+    && count >= 30 && minutes <= PATTERNS.rapid.maxMinutes
+    && /계정 이름을 바꿔|계정을 바꿔|여러 계정을 바꿔/.test(description);
+  const clear = !positiveSuccess && (spraying || rapid || sustained || passwordGuessing || accountRotation);
   // Do not alert on every T1110 failure: require a meaningful burst without a success,
   // or evidence of multiple targeted accounts. Low-volume retries stay recorded.
   const multiAccountAttempts = /두 계정에 실패|여러 계정에 실패/.test(description)
@@ -52,7 +56,7 @@ export function decide(alert) {
   const confidence = clear ? 0.95 : suspicious ? 0.65 : 0.2;
   const action = confidence >= BLOCK ? 'block' : confidence >= ALERT ? 'alert' : 'record';
   const reason = clear
-    ? spraying ? 'password_spraying' : rapid ? 'rapid_failed_logins' : passwordGuessing ? 'explicit_password_guessing' : 'sustained_failed_logins'
+    ? spraying ? 'password_spraying' : rapid ? 'rapid_failed_logins' : accountRotation ? 'rapid_account_rotation' : passwordGuessing ? 'explicit_password_guessing' : 'sustained_failed_logins'
     : suspicious ? 'suspicious_login_failures' : 'insufficient_brute_force_evidence';
   return { action, confidence, reason };
 }
