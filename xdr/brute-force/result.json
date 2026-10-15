@@ -40,9 +40,9 @@
     },
     {
       "alertId": "bf-07",
-      "action": "alert",
-      "confidence": 0.65,
-      "reason": "suspicious_login_failures"
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "explicit_password_guessing"
     },
     {
       "alertId": "bf-08",
@@ -172,8 +172,8 @@
     }
   ],
   "counts": {
-    "block": 8,
-    "alert": 11,
+    "block": 9,
+    "alert": 10,
     "record": 9
   }
 }
