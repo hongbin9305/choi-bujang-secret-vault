@@ -1,0 +1,179 @@
+{
+  "schema": "aleph.xdr.result.v1",
+  "moduleKey": "brute-force",
+  "decisions": [
+    {
+      "alertId": "bf-01",
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "rapid_failed_logins"
+    },
+    {
+      "alertId": "bf-02",
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "password_spraying"
+    },
+    {
+      "alertId": "bf-03",
+      "action": "alert",
+      "confidence": 0.65,
+      "reason": "moderate_failure_burst"
+    },
+    {
+      "alertId": "bf-04",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-05",
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "password_spraying"
+    },
+    {
+      "alertId": "bf-06",
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "rapid_failed_logins"
+    },
+    {
+      "alertId": "bf-07",
+      "action": "alert",
+      "confidence": 0.65,
+      "reason": "moderate_failure_burst"
+    },
+    {
+      "alertId": "bf-08",
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "rapid_failed_logins"
+    },
+    {
+      "alertId": "bf-09",
+      "action": "block",
+      "confidence": 0.95,
+      "reason": "password_spraying"
+    },
+    {
+      "alertId": "bf-10",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-11",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-12",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-13",
+      "action": "record",
+      "confidence": 0.2,
+      "reason": "insufficient_brute_force_evidence"
+    },
+    {
+      "alertId": "bf-14",
+      "action": "record",
+      "confidence": 0.2,
+      "reason": "insufficient_brute_force_evidence"
+    },
+    {
+      "alertId": "bf-15",
+      "action": "record",
+      "confidence": 0.2,
+      "reason": "insufficient_brute_force_evidence"
+    },
+    {
+      "alertId": "bf-16",
+      "action": "record",
+      "confidence": 0.2,
+      "reason": "insufficient_brute_force_evidence"
+    },
+    {
+      "alertId": "bf-17",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-18",
+      "action": "alert",
+      "confidence": 0.65,
+      "reason": "moderate_failure_burst"
+    },
+    {
+      "alertId": "bf-19",
+      "action": "record",
+      "confidence": 0.2,
+      "reason": "insufficient_brute_force_evidence"
+    },
+    {
+      "alertId": "bf-20",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-21",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-22",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-23",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-24",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-25",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-26",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-27",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    },
+    {
+      "alertId": "bf-28",
+      "action": "record",
+      "confidence": 0.05,
+      "reason": "no_confirmed_T1110_pattern"
+    }
+  ],
+  "counts": {
+    "block": 6,
+    "alert": 3,
+    "record": 19
+  }
+}
