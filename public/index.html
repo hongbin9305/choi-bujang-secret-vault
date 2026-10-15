@@ -372,6 +372,8 @@
       } catch (error) { deviceStatus.textContent = error.message; }
     });
     document.querySelector('#checkDevice').addEventListener('click', refreshApproval);
+    let accessToken = null;
+    let currentUserEmail = null;
     let currentNotes = [];
     let editingId = null;
 
@@ -395,7 +397,7 @@
     }
 
   async function getSession() {
-  const access_token = sessionStorage.getItem('access_token');
+  const access_token = accessToken;
 
   if (!access_token) {
     throw new Error('로그인이 필요합니다.');
@@ -613,14 +615,14 @@
     }
 
     async function loadVault() {
-      if (!sessionStorage.getItem('access_token')) { showLogin('로그인이 필요합니다.'); return; }
+      if (!accessToken) { showLogin('로그인이 필요합니다.'); return; }
       loginPanel.classList.add('hidden');
       await refreshApproval();
     }
 
     async function openApprovedVault() {
-      const access_token = sessionStorage.getItem('access_token');
-const email = sessionStorage.getItem('user_email');
+      const access_token = accessToken;
+const email = currentUserEmail;
 
 const session = access_token
   ? { access_token, user: { email } }
@@ -727,7 +729,7 @@ const error = null;
     ).addEventListener(
       'click',
       async () => {
- const access_token = sessionStorage.getItem('access_token');
+ const access_token = accessToken;
 
 if (access_token) {
   await loadSecurityStatus({ access_token });
@@ -769,9 +771,8 @@ if (access_token) {
            ? null
                 : new Error(data.error || '로그인 실패'); 
  if (response.ok) {
-  sessionStorage.setItem('access_token', data.access_token);
-  sessionStorage.setItem('refresh_token', data.refresh_token);
-  sessionStorage.setItem('user_email', data.user.email);
+  accessToken = data.access_token;
+  currentUserEmail = data.user.email;
 }
         if (error) {
             message.textContent =
@@ -798,9 +799,8 @@ if (access_token) {
     ).addEventListener(
       'click',
       async () => {
-  sessionStorage.removeItem('access_token');
-sessionStorage.removeItem('refresh_token');
-sessionStorage.removeItem('user_email');
+  accessToken = null;
+currentUserEmail = null;
 
 const error = null;
 
