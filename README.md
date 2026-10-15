@@ -147,3 +147,14 @@ Supabase의 테이블 권한을 확인하는 SQL을 실행하여 필요한 `SELE
 [AGENTS.md](AGENTS.md)를 먼저 읽히고 한 번에 한 제작 단위만 요청하세요. 2단계부터는 자료 보호를 구현할 때 `public/data.json`을 복사하는 1단계 빌드 흐름도 함께 바꿔야 합니다. 3단계 이후의 로그인, 허용 경로, 5단계의 원본 API 주소, 6단계 이후 정책 규칙은 해당 단계 원고와 계약에 맞춰 추가합니다. 비밀번호·토큰·서버 전용 키·실제 학생 기록을 코드, Git, 제출 묶음에 넣지 않습니다.
 
 `src/decider.mjs`와 `src/detect.mjs`의 로컬 시험은 반 엔진이나 운영 심판의 결과가 아닙니다. 1단계 이후 제출 묶음 계약 `aleph.defense.submission.v2`는 `scripts/bundle.mjs`에 남아 있으며, 코딩 도구가 해당 단계의 최신 배포 주소와 Git 원격을 맞춘 뒤 사용합니다.
+
+
+## 7단계 저장점 — 복합 이상 접속 추가 확인
+
+- 1~5단계의 Supabase 인증, 서버 로그인 API, 소유자별 메모 격리, 비인가 접근 차단과 보안 이벤트 기록을 보존합니다.
+- 6단계 `device_registered` 규칙을 유지하며, 학생이 확인한 실제 6단계 심판 점수는 100점입니다.
+- 7단계에서는 엔진 계약의 `signals`, `recentEvents`, `stepUp`만 사용합니다. `judge_fixture` 출처에서 비정상 시각, 낯선 네트워크, 최근 다량의 위험 사건이 겹칠 때 `step_up`을 반환합니다.
+- 출처 불명·누락된 값을 임의의 정상 위치·시각·네트워크로 채우지 않습니다. 지역 하나만으로 영구 차단하지 않습니다.
+- 계약상 `stepUp.verified`와 `authAgeSeconds`가 제공되지만, 실제 재로그인 확인·자료 차단은 운영 엔진에서 별도 실측해야 합니다. 로컬 가상 연습은 운영 심판 결과가 아닙니다.
+
+Windows PowerShell 검증 명령: `npm.cmd install`, `npm.cmd run decider:test`, `npm.cmd run fixture:7`, `npm.cmd run bundle`. 번들 생성 전 커밋과 Git 상태를 확인합니다. `bundle-notes.json` 및 `artifacts/submission.json`은 커밋하지 않습니다.
