@@ -4,6 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a28">
+  <link rel="manifest" href="/manifest.webmanifest">
   <title>BYTE BACK | 점령된 자료실</title>
   <style>
     :root {
@@ -191,6 +193,15 @@
       </form>
     </section>
 
+    <section id="devicePanel" class="panel hidden">
+      <h2>기기 승인 상태</h2>
+      <p id="deviceStatus" role="status">서버 확인 중...</p>
+      <button id="requestDevice" type="button">이 기기 승인 요청</button>
+      <button id="checkDevice" type="button" class="secondary">승인 상태 새로고침</button>
+      <p>설치 여부는 기기 승인을 의미하지 않습니다. 승인은 서버에서 별도로 확인합니다.</p>
+    </section>
+    <p id="offlineNotice" class="hidden" role="status">오프라인 상태입니다. 보호 자료는 연결 후 확인할 수 있습니다.</p>
+
     <!-- 자료실 -->
     <section id="vaultPanel" class="hidden">
       <p id="userInfo"></p>
@@ -319,6 +330,48 @@
     const cancelEditButton =
       document.querySelector('#cancelEditButton');
 
+    const devicePanel = document.querySelector('#devicePanel');
+    const deviceStatus = document.querySelector('#deviceStatus');
+    const offlineNotice = document.querySelector('#offlineNotice');
+    function updateOnline() { offlineNotice.classList.toggle('hidden', navigator.onLine); }
+    window.addEventListener('online', updateOnline);
+    window.addEventListener('offline', updateOnline);
+    updateOnline();
+    async function checkApproval(method = 'GET') {
+      const session = await getSession();
+      const response = await fetch('/api/device-approval', {
+        method, cache: 'no-store',
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+      if (!response.ok) throw new Error('기기 승인 상태를 확인할 수 없습니다.');
+      return response.json();
+    }
+    async function refreshApproval() {
+      vaultPanel.classList.add('hidden');
+      devicePanel.classList.add('hidden');
+      securityPanel.classList.add('hidden');
+      notesList.replaceChildren();
+      currentNotes = [];
+      devicePanel.classList.remove('hidden');
+      try {
+        const state = await checkApproval();
+        deviceStatus.textContent = state.approved ? '서버 승인 완료' :
+          state.status === 'pending' ? '승인 대기 중' :
+          state.status === 'revoked' ? '기기 승인 취소됨' : '미등록 기기';
+        if (state.approved) {
+          devicePanel.classList.add('hidden');
+          await openApprovedVault();
+        }
+      } catch (error) { deviceStatus.textContent = error.message; }
+    }
+    document.querySelector('#requestDevice').addEventListener('click', async () => {
+      try {
+        const state = await checkApproval('POST');
+        deviceStatus.textContent = state.approved ? '서버 승인 완료' : '승인 요청 접수 · 서버 승인 대기 중';
+        if (state.approved) await refreshApproval();
+      } catch (error) { deviceStatus.textContent = error.message; }
+    });
+    document.querySelector('#checkDevice').addEventListener('click', refreshApproval);
     let currentNotes = [];
     let editingId = null;
 
@@ -560,6 +613,12 @@
     }
 
     async function loadVault() {
+      if (!sessionStorage.getItem('access_token')) { showLogin('로그인이 필요합니다.'); return; }
+      loginPanel.classList.add('hidden');
+      await refreshApproval();
+    }
+
+    async function openApprovedVault() {
       const access_token = sessionStorage.getItem('access_token');
 const email = sessionStorage.getItem('user_email');
 
