@@ -1,5 +1,5 @@
 {
-  "step": 7,
+  "step": 8,
   "repoUrl": "https://github.com/hongbin9305/choi-bujang-secret-vault",
   "publicAppUrl": "https://choi-bujang-secret-vault-five-kappa.vercel.app/",
   "sampleMarker": "SAMPLE_NOTE_1",
@@ -10,8 +10,12 @@
     "jwksUrl": "https://krgebzcfvgflrkjisaxd.supabase.co/auth/v1/.well-known/jwks.json"
   },
   "allowedRoutes": [
-    "/api/note",
-    "/api/note/:id"
+    "GET /api/notes/:id",
+    "POST /api/notes/:id",
+    "PUT /api/notes/:id",
+    "PATCH /api/notes/:id",
+    "DELETE /api/notes/:id",
+    "GET /api/notices/:id"
   ],
   "originalApiUrl": "https://krgebzcfvgflrkjisaxd.supabase.co/rest/v1/defense_notes",
   "restoreRoute": null
